@@ -1,6 +1,8 @@
 package com.goldenhour.ui;
 
-import com.goldenhour.service.*;
+import com.goldenhour.service.stocksys.StockCountService;
+import com.goldenhour.service.stocksys.StockMovementService;
+
 import java.util.Scanner;
 
 public class StockUI {

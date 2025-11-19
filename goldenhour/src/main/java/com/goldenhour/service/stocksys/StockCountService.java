@@ -1,25 +1,24 @@
-package com.goldenhour.service;
+package com.goldenhour.service.stocksys;
+
 import com.goldenhour.categories.Model;
 import com.goldenhour.categories.Outlet;
-import com.goldenhour.storage.CSVHandler;
 import com.goldenhour.utils.TimeUtils;
+import com.goldenhour.dataload.DataLoad;
 
 import java.util.*;
+
 
 public class StockCountService {
 
     public static void performStockCount(String period) {
         Scanner sc = new Scanner(System.in);
-        List<Model> stockList = CSVHandler.readStock();
-        List<Outlet> outlets = CSVHandler.readOutlets();
+        List<Model> stockList = DataLoad.allModels;
+        List<Outlet> outlets = DataLoad.allOutlets;
 
         int totalChecked = 0;
         int tallyCorrect = 0;
         int mismatches = 0;
-        //String outletCode = "";
-
-        //System.out.print("Enter Outlet Code for Stock Count: ");
-        //outletCode = sc.nextLine().trim();
+ 
         System.out.println("\n=== " + period + " Stock Count ===");
         System.out.println("Date: " + TimeUtils.getDate());
         System.out.println("Time: " + TimeUtils.getTime());
@@ -41,7 +40,6 @@ public class StockCountService {
                     mismatches++;
                 }
             }
-            //sc.close();
         }
 
         System.out.println("\nTotal Models Checked: " + totalChecked);
@@ -53,6 +51,5 @@ public class StockCountService {
         }
         System.out.println(period + " stock count completed.");
 
-        //sc.close();
     }
 }

@@ -1,14 +1,15 @@
-package com.goldenhour.service;
+package com.goldenhour.service.loginregister;
 
 import com.goldenhour.categories.Employee;
-import com.goldenhour.storage.CSVHandler;
+import com.goldenhour.dataload.DataLoad;
+
 import java.util.List;
 
 public class AuthService {
     private static Employee currentUser;
 
     public static boolean login(String id, String password) {
-        List<Employee> employees = CSVHandler.readEmployees();
+        List<Employee> employees = DataLoad.allEmployees;
         for (Employee emp : employees) {
             if (emp.getId().equals(id) && emp.getPassword().equals(password)) {
                 currentUser = emp;
@@ -22,12 +23,8 @@ public class AuthService {
     }
 
     public static void logout() {
-        if (currentUser != null) {
-            System.out.println("\n" + currentUser.getName() + " has logged out.");
-            currentUser = null;
-        } else {
-            System.out.println("\nNo user is currently logged in.");
-        }
+        System.out.println("\n" + currentUser.getName() + " has logged out.");
+        currentUser = null;
     }
 
     public static Employee getCurrentUser() {

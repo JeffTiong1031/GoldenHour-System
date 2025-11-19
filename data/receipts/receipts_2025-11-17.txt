@@ -1,0 +1,10 @@
+Stock In Receipt
+Date: 2025-11-17
+Time: 10:53 PM
+From: HQ
+To: C60
+Models:
+- DW2400-3 (10)
+Total Quantity: 10
+Employee in Charge: Tan Guan Han
+

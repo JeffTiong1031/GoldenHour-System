@@ -1,9 +1,12 @@
 package com.goldenhour.ui;
 
 import com.goldenhour.service.*;
+import com.goldenhour.service.loginregister.AuthService;
+import com.goldenhour.service.loginregister.RegistrationService;
+
 import java.util.Scanner;
 
-public class ConsoleUI {
+public class LoginUI {
     private static Scanner sc = new Scanner(System.in);
 
     public static void start() {

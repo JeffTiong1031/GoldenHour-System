@@ -1,14 +1,16 @@
-package com.goldenhour.service;
+package com.goldenhour.service.loginregister;
 
 import com.goldenhour.categories.Employee;
 import com.goldenhour.storage.CSVHandler;
+import com.goldenhour.dataload.DataLoad;
+
 import java.util.*;
 
 public class RegistrationService {
 
     public static void registerEmployee(String id, String name, String role, String password) {
 
-        List<Employee> employees = CSVHandler.readEmployees();
+        List<Employee> employees = DataLoad.allEmployees;
 
         for (Employee e : employees) {
             if (e.getId().equals(id)) {

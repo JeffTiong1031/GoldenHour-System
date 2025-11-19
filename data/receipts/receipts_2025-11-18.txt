@@ -1,0 +1,10 @@
+=== Stock In ===
+Date: 2025-11-18
+Time: 12:06 AM
+From: HQ (Headquarter)
+To: C60 (Kuala Lumpur City Centre)
+Models:
+- DW2300-3 (Quantity:1)
+Total Quantity: 1
+Employee in Charge: Tan Guan Han
+

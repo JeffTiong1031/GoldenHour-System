@@ -1,15 +1,18 @@
-package com.goldenhour.service;
+package com.goldenhour.service.stocksys;
 
 import com.goldenhour.categories.*;
+import com.goldenhour.service.loginregister.AuthService;
 import com.goldenhour.storage.*;
 import com.goldenhour.utils.TimeUtils;
+import com.goldenhour.dataload.DataLoad;
 
 import java.util.*;
 
 public class StockMovementService {
     public static void stockInOut(String type) {
         Scanner sc = new Scanner(System.in);
-        List<Model> models = CSVHandler.readStock(); // reads full model list (with per-outlet stock)
+        List<Model> models = DataLoad.allModels; // reads full model list (with per-outlet stock)
+        List<Outlet> outlets = DataLoad.allOutlets;
         List<String> movementDetails = new ArrayList<>();
 
         System.out.print("From: ");
@@ -58,7 +61,7 @@ public class StockMovementService {
                     m.setStock(to, current + qty);
                 }
 
-                movementDetails.add("- " + m.getModelCode() + " (" + qty + ")");
+                movementDetails.add("- " + m.getModelCode() + " (Quantity:" + qty + ")");
                 totalQty += qty;
             } else {
                 System.out.println("Model not found: " + code);
@@ -68,23 +71,38 @@ public class StockMovementService {
         // Persist updated models back to CSV
         CSVHandler.writeStock(models); // implement to overwrite model CSV
 
+        System.out.println();
+
+        String fromName = "";
+        String toName = "";
+
+        // Get outlet names
+        for (Outlet o : outlets) {
+            if (o.getOutletCode().equals(from)) {
+                fromName = o.getOutletName();
+            } else if (o.getOutletCode().equals(to)) {
+                toName = o.getOutletName();
+            }
+        }
+
         // Build receipt text
-        String receipt = type + " Receipt\n" +
+
+        String receipt = "=== " + type + " ===\n" +
                 "Date: " + TimeUtils.getDate() + "\n" +
                 "Time: " + TimeUtils.getTime() + "\n" +
-                "From: " + from + "\n" +
-                "To: " + to + "\n" +
+                "From: " + from + " (" + fromName + ")\n" +
+                "To: " + to + " (" + toName + ")\n" +
                 "Models:\n" + String.join("\n", movementDetails) + "\n" +
                 "Total Quantity: " + totalQty + "\n" +
                 "Employee in Charge: " + (AuthService.getCurrentUser() != null ? AuthService.getCurrentUser().getName() : "Unknown");
 
         System.out.println(receipt);
+        System.out.println();
         System.out.println("Model quantities updated successfully.");
         System.out.println(type + " recorded.");
 
         ReceiptHandler.appendReceipt(receipt); // appends to receipts_YYYY-MM-DD.txt
 
-        //sc.close();
     }
 
 }

@@ -38,6 +38,7 @@ public class Model {
         return stockPerOutlet;
     }
 
+    // For debugging
     @Override
     public String toString() {
         return "Model{" +
@@ -68,6 +69,17 @@ public class Model {
     }
 
     public String toCSV() {
+
+        // Since the stockPerOutlet keys are dynamic, we need to serialize them in a way that matches the CSV structure
+        // String.join cannot be used directly here as we need to ensure the order of outlets matches the CSV header
+        // We are given two options here :
+        // 1. Stringbuilder , then append each key-value pair in order
+        // 2. Loop stockPerOutlet.get(outlet) + "," for each outlet in known order
+      
+        // We use StringBuilder here instead of String.join to handle dynamic keys
+        // Because String is immutable, looping adding comma method will create String object everytime it runs O(n^2) time complexity
+        // While StringBuilder is mutable, it appends in place O(n) time complexity
+
         StringBuilder sb = new StringBuilder();
         sb.append(modelCode).append(",").append(price);
         for (String outlet : stockPerOutlet.keySet()) {
