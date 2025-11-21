@@ -262,7 +262,7 @@ git fetch origin
 git checkout feature/salessys      # For Sales 
 git checkout feature/search        # For Search 
 git checkout feature/edit          # For Edit/Update 
-git checkout attendance            # For Attendance 
+git checkout feature/attendance            # For Attendance 
 
 ```
 
@@ -305,30 +305,36 @@ When your feature is 100% complete and tested:
 ---
 ## 🚨 Migration Guide: Switching from Fork to Collaborator
 
-For those
 
-**Forked the repo initially** AND **have done your changes for your work**
+**Who is this for?**: who **Forked the repo initially** AND **have already written code** on their computer 
 
-please read this.
+**Goal**: Disconnect your Git from your personal Forkand connect it directly to Main Repository
 
-**Situation**: You have already written code, but your Git is connected to your own Fork. 
+### Step 1: Save your current work (Crucial!)
+Before we change any settings, let's make sure the code currently on your screen is saved.
 
-**Goal**: Connect your Git directly to the Main Repository and submit your work there.
+```bash
+git add .
+git commit -m "Final save before migrating to main repo"
+```
+(if it says "nothing to commit", it means you were already saved.)
 
-**Step 1. Check your current setup**
+**Step 2. Check your connection**
 
 Open terminal and type: 
 
 ```
 git remote -v
 ```
-- if you see `origin ... your-username/GoldenHour-System`, follow the steps below.
+- **Scenario A** : You see `origin ... your-username/GoldenHour-System`, 
+  - 👉 **Action**: Go to **Step 3**.
 
-- if you see `origin ... zerngit/GoldenHour-System`, you are already setup, skip to `Step 3`
+- **Scenario B** : You see `origin ... zerngit/GoldenHour-System`, 
+  - 👉 **Action**: Go to **Step 5**.
 
-**Step 2: Re-wire your "Origin"**
+**Step 3: Re-wire your "Origin"**
 
-We are going to disconnect your local code from your Fork and connect it to `zerngit` repo
+We will remove link to your fork and point it to the main project
 
   1. **Remove the old link to your fork**
   ```
@@ -343,7 +349,7 @@ We are going to disconnect your local code from your Fork and connect it to `zer
 
   3. **Verify** : Run `git remote -v` again. It should now show `zerngit/GoldenHour-System`
 
-**Step 3: Prepare your branch**
+**Step 4: Rename your branch**
 
 You cannot push to `main`. You must ensure your code is on the correct **Feature Branch**
 
@@ -352,7 +358,8 @@ You cannot push to `main`. You must ensure your code is on the correct **Feature
   git branch -m feature/your_feature_name
   ```
 
-**Step 4: Sync and Push**
+**Step 5: Sync and Push**
+
 Now that you are connected to the main repo and on the right branch name:
 
   1. **Get the latest update**
@@ -367,4 +374,4 @@ Now that you are connected to the main repo and on the right branch name:
   git push -u origin feature/your_feature_name --force
   ```
 
-  (Use `--force` only this one time to overwrite the empty placeholder branch)
+  **Note: Use `--force` only this one time to overwrite the empty placeholder branch**
