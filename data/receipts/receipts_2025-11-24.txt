@@ -1,0 +1,13 @@
+Sales Receipt
+Date: 2025-11-24
+Time: 11:25 am
+Outlet: C60
+Customer Name: Jackson
+Model Purchased: DW2300-2
+Quantity: 1
+Unit Price: RM399.0
+Subtotal: RM399.0
+Transaction Method: e-wallet
+Employee in Charge: Adam bin Abu
+
+

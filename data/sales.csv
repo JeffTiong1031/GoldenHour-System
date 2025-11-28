@@ -1,1 +1,2 @@
-customerName,itemPurchased,transactionMethod,price
+date,time,customerName,model,quantity,subtotal,transactionMethod,employee
+2025-11-24,11:25 am,Jackson,DW2300-2,1,399.0,e-wallet,Adam bin Abu
