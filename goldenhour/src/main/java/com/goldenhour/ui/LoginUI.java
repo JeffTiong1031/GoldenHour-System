@@ -1,8 +1,9 @@
 package com.goldenhour.ui;
 
-import com.goldenhour.service.*;
+
 import com.goldenhour.service.loginregister.AuthService;
 import com.goldenhour.service.loginregister.RegistrationService;
+
 
 import java.util.Scanner;
 
@@ -61,6 +62,10 @@ public class LoginUI {
                     StockUI.openStockMenu();
                     return;
                 
+                case "4":
+                    SalesUI.openSalesMenu();
+                    break;
+
                 case "5":
                     AuthService.logout();
                     return;
@@ -88,6 +93,10 @@ public class LoginUI {
                 
                 case "2":
                     StockUI.openStockMenu();
+                    break;
+
+                case "3":
+                    SalesUI.openSalesMenu();
                     break;
 
                 case "4":
