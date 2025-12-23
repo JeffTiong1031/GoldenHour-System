@@ -56,11 +56,11 @@ public class LoginUI {
 
                 case "2":
                     AttendanceUI.openAttendanceMenu();
-                    return;
+                    break;
 
                 case "3":
                     StockUI.openStockMenu();
-                    return;
+                    break;
                 
                 case "4":
                     SalesUI.openSalesMenu();

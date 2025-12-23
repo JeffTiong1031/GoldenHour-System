@@ -69,7 +69,7 @@ public class SalesUI {
 
     private static void editSalesMenu() {
         // Pass the static scanner 'sc' to the method
-        editSales.editSaleInteractive(sc); 
+        editSales.editSales(sc); 
     }
 }
 

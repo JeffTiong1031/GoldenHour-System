@@ -19,15 +19,15 @@ public class StockUI {
             System.out.println("4. Stock Out");
             System.out.println("5. Search Stock");
             System.out.println("6: Edit Stock");
-            System.out.println("6. Back to Main Menu");
+            System.out.println("7. Back to Main Menu");
             System.out.print("Select: ");
             String choice = sc.nextLine();
 
             switch (choice) {
                 case "1" -> StockCountService.performStockCount("Morning");
                 case "2" -> StockCountService.performStockCount("Night");
-                case "3" -> StockMovementService.stockInOut("Stock In");
-                case "4" -> StockMovementService.stockInOut("Stock Out");
+                case "3" -> StockMovementService.stockInOut(sc,"Stock In");
+                case "4" -> StockMovementService.stockInOut(sc,"Stock Out");
                 case "5" -> StockSearch.searchStock(sc);
                 case "6" -> EditStock.editStock(sc);
                 case "7" -> { return; }

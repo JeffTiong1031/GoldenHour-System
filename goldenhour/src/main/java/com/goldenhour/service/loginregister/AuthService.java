@@ -14,7 +14,7 @@ public class AuthService {
             if (emp.getId().equals(id) && emp.getPassword().equals(password)) {
                 currentUser = emp;
                 System.out.println("\nLogin \u001B[32mSuccessful!\u001B[0m");
-                System.out.println("Welcome, " + emp.getName() + " (" + emp.getId().substring(0, 3) + ")");
+                System.out.println("Welcome, " + "\u001B[33m" + emp.getName() + "\u001B[0m" + "\u001B[32m" +" (" + emp.getId() + ")" + "\u001B[0m");
                 return true;
             }
         }
@@ -23,7 +23,7 @@ public class AuthService {
     }
 
     public static void logout() {
-        System.out.println("\n" + currentUser.getName() + " has logged out.");
+        System.out.println("\n" + "\u001B[33m" + currentUser.getName()  + " has logged out." + "\u001B[0m");
         currentUser = null;
     }
 

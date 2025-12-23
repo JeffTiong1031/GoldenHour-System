@@ -1,0 +1,83 @@
+=== RECEIPT ===
+Date: 2025-12-21
+Method: Credit Card
+
+DW2300-1 x1  RM399.0
+
+TOTAL: RM 399.0
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-21
+Time: 01:47 PM
+Outlet: C63
+Customer: Tay Zheheng
+----------------------------------
+ITEMS PURCHASED:
+DW2300-1        x 1  RM  399.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 399.0
+Method: Cash
+Employee: Tan Guan Han
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-21
+Time: 01:53 PM
+Outlet: C62
+Customer: Testing
+----------------------------------
+ITEMS PURCHASED:
+DW2300-1           x 1   RM   399.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 399.00
+Method: Card
+Employee: Tan Guan Han
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-21
+Time: 02:37 PM
+Outlet: C62
+Customer: Tungtungtung
+----------------------------------
+ITEMS PURCHASED:
+SW2500-1           x 1   RM   845.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 845.00
+Method: Card
+Employee: Tan Guan Han
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-21
+Time: 02:55 PM
+Outlet: C60
+Customer: tay
+----------------------------------
+ITEMS PURCHASED:
+SW2400-2           x 1   RM   769.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 769.00
+Method: Card
+Employee: Tan Guan Han
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-21
+Time: 10:25 PM
+Outlet: C60
+Customer: tan
+----------------------------------
+ITEMS PURCHASED:
+DW2400-1           x 1   RM   599.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 599.00
+Method: Card
+Employee: test
+
+--------------------------------------------------

@@ -6,7 +6,9 @@ import com.goldenhour.categories.Outlet;
 import com.goldenhour.dataload.DataLoad;
 import com.goldenhour.service.loginregister.AuthService;
 import com.goldenhour.storage.CSVHandler;
+import com.goldenhour.storage.DatabaseHandler;
 import com.goldenhour.utils.TimeUtils;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,6 +49,7 @@ public class AttendanceService {
 
         Attendance newRecord = new Attendance(emp.getId(), emp.getName(), today, clockInTime);
         records.add(newRecord);
+        DatabaseHandler.saveAttendance(newRecord);
         CSVHandler.writeAttendance(records);
 
         // Display output as per requirement
@@ -95,6 +98,8 @@ public class AttendanceService {
         todayRecord.setClockOutTime(clockOutTime);
         todayRecord.setHoursWorked(hoursWorked);
 
+        DatabaseHandler.updateAttendance(todayRecord);
+        
         CSVHandler.writeAttendance(records);
 
         // Select outlet for consistency
@@ -117,7 +122,7 @@ public class AttendanceService {
 
     private static double calculateHours(String clockIn, String clockOut) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
             LocalDateTime inTime = LocalDateTime.parse("2025-01-01 " + clockIn, 
                                    DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"));
             LocalDateTime outTime = LocalDateTime.parse("2025-01-01 " + clockOut, 

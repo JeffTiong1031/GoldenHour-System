@@ -8,3 +8,13 @@ Models:
 Total Quantity: 2
 Employee in Charge: Tan Guan Han
 --------------------------------------------------
+=== Stock In ===
+Date: 2025-12-20
+Time: 01:44 PM
+From: HQ (Headquarter)
+To: C60 (Kuala Lumpur City Centre)
+Models:
+- DW2300-1 (Quantity: 5)
+Total Quantity: 5
+Employee in Charge: Tan Guan Han
+--------------------------------------------------

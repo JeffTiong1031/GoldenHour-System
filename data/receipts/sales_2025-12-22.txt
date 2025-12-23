@@ -1,0 +1,60 @@
+=== Sales Receipt ===
+Date: 2025-12-22
+Time: 11:12 PM
+Outlet: C60
+Customer: mingli
+----------------------------------
+ITEMS PURCHASED:
+DW2400-1           x 1   RM   599.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 599.00
+Method: Card
+Employee: Test Manager
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-22
+Time: 11:39 PM
+Outlet: C60
+Customer: Chen Da Nao
+----------------------------------
+ITEMS PURCHASED:
+SW2400-1           x 3   RM  2367.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 2367.00
+Method: Card
+Employee: Test Manager
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-22
+Time: 11:59 PM
+Outlet: C60
+Customer: shawn
+----------------------------------
+ITEMS PURCHASED:
+SW2400-1           x 1   RM   789.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 789.00
+Method: Card
+Employee: Test Manager
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2025-12-22
+Time: 11:59 PM
+Outlet: C60
+Customer: cristiano
+----------------------------------
+ITEMS PURCHASED:
+SW2400-1           x 1   RM   789.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 789.00
+Method: Cash
+Employee: Test Manager
+
+--------------------------------------------------

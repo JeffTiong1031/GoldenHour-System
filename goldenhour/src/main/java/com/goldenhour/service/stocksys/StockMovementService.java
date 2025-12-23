@@ -8,9 +8,9 @@ import com.goldenhour.dataload.DataLoad;
 
 import java.util.*;
 
+
 public class StockMovementService {
-    public static void stockInOut(String type) {
-        Scanner sc = new Scanner(System.in);
+    public static void stockInOut(Scanner sc, String type) {
         List<Model> models = DataLoad.allModels; // reads full model list (with per-outlet stock)
         List<Outlet> outlets = DataLoad.allOutlets;
         List<String> movementDetails = new ArrayList<>();
@@ -48,20 +48,28 @@ public class StockMovementService {
 
                 if (type.equalsIgnoreCase("Stock In")) {
                     // increase stock at 'to' outlet
-                    int current = m.getStock(to);
-                    m.setStock(to, current + qty);
-                    current = m.getStock(from);
-                    m.setStock(from, current - qty); // Error
+                    int currentTo = m.getStock(to);
+                    m.setStock(to, currentTo + qty);
+                    DatabaseHandler.updateStock(m.getModelCode(), to, currentTo + qty); // ✅ DB WRITE
+
+                    int currentFrom = m.getStock(from);
+                    m.setStock(from, currentFrom - qty); // Error
+                    DatabaseHandler.updateStock(m.getModelCode(), from, currentFrom - qty); // ✅ DB WRITE
+
                 } else {
                     // decrease stock at 'from' outlet (ensure not negative)
-                    int current = m.getStock(from);
-                    if (current < qty) {
-                        System.out.println("Insufficient stock at source outlet (" + from + "). Available: " + current);
+                    int currentFrom = m.getStock(from);
+                    if (currentFrom < qty) {
+                        System.out.println("Insufficient stock at source outlet (" + from + "). Available: " + currentFrom);
                         continue;
                     }
-                    m.setStock(from, current - qty); // Error
-                    current = m.getStock(to);
-                    m.setStock(to, current + qty);
+                    m.setStock(from, currentFrom - qty); // Error
+                    DatabaseHandler.updateStock(m.getModelCode(), from, currentFrom - qty); // ✅ DB WRITE
+
+                    int currentTo = m.getStock(to);
+                    m.setStock(to, currentTo + qty);
+                    DatabaseHandler.updateStock(m.getModelCode(), to, currentTo + qty); // ✅ DB WRITE
+
                 }
 
                 movementDetails.add("- " + m.getModelCode() + " (Quantity: " + qty + ")");
@@ -70,7 +78,7 @@ public class StockMovementService {
                 System.out.println("Model not found: " + code);
             }
         }
-
+        
         // Persist updated models back to CSV
         CSVHandler.writeStock(models); // implement to overwrite model CSV
 

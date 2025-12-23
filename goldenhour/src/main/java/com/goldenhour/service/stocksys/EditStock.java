@@ -3,6 +3,7 @@ package com.goldenhour.service.stocksys;
 import com.goldenhour.categories.Model;
 import com.goldenhour.dataload.DataLoad;
 import com.goldenhour.storage.CSVHandler;
+import com.goldenhour.storage.DatabaseHandler;
 
 import java.util.Scanner;
 
@@ -61,7 +62,10 @@ public class EditStock {
         // 5. Update Memory
         foundModel.setStock(outletCode, newStock);
 
-        // 6. Save to Disk (Rewrites model.csv)
+        // 6. Save to Database
+        DatabaseHandler.updateStock(foundModel.getModelCode(), outletCode, newStock);
+
+        // 7. Save to Disk (Rewrites model.csv)
         CSVHandler.writeStock(DataLoad.allModels);
         
         System.out.println("\nStock information updated \u001B[32msuccessfully\u001B[0m.");

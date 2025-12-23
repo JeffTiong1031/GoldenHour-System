@@ -11,6 +11,7 @@ public class SalesSearch {
      * Smart search: checks Customer Name, Model, or Date for the given keyword.
      */
     public List<Sales> searchByKeyword(String keyword) {
+
         if (keyword == null || keyword.trim().isEmpty()) return List.of();
 
         String lowerKey = keyword.trim().toLowerCase();

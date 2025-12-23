@@ -1,0 +1,168 @@
+package com.goldenhour.gui.dashboard;
+
+import com.goldenhour.gui.admin.DatabaseViewerPanel;
+import com.goldenhour.gui.admin.RegisterEmployeePanel;
+import com.goldenhour.gui.auth.LoginFrame;
+import com.goldenhour.gui.common.BackgroundPanel;
+import com.goldenhour.gui.common.ModernSidebarButton;
+import com.goldenhour.gui.hr.AttendancePanel;
+import com.goldenhour.gui.inventory.StockOperationsPanel;
+import com.goldenhour.gui.inventory.StockPanel;
+import com.goldenhour.gui.pos.POSPanel;
+import com.goldenhour.gui.pos.SalesHistoryPanel;
+import com.goldenhour.service.loginregister.AuthService;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainDashboardFrame extends JFrame {
+
+    private JPanel mainContentPanel;
+    private CardLayout cardLayout;
+    private JPanel sidebar;
+    private List<ModernSidebarButton> navButtons = new ArrayList<>();
+
+    public MainDashboardFrame() {
+        setTitle("Golden Hour System");
+        setSize(1280, 800);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        try {
+            ImageIcon appIcon = new ImageIcon("C:\\Users\\60115\\OneDrive\\Desktop\\Y1S1\\GoldenHour-System\\goldenhour\\image\\app_icon_1.png");
+            setIconImage(appIcon.getImage());
+        } catch (Exception e) {
+            System.out.println("App Icon not found.");
+        }
+        
+        // === 1. SIDEBAR SETUP ===
+        sidebar = new JPanel();
+        sidebar.setBackground(Color.WHITE);
+        sidebar.setPreferredSize(new Dimension(260, 800));
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        // Add a shadow/border on the right
+        sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(230, 230, 230)));
+
+        // -- Header (Text Version - Crisp & Professional) --
+        // Use FlowLayout CENTER to ensure the text sits right in the middle horizontally
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 15)); 
+        header.setBackground(Color.WHITE);
+        
+        // STRICT SIZE LOCK: prevents it from growing or shrinking
+        Dimension headerSize = new Dimension(260, 60);
+        header.setPreferredSize(headerSize);
+        header.setMinimumSize(headerSize);
+        header.setMaximumSize(headerSize);
+        
+        // CRITICAL FIX: Align the panel itself to the LEFT so it stacks perfectly with buttons
+        header.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Using HTML to do Dual-Color Text matching your logo
+        JLabel logoLabel = new JLabel("<html><span style='color:#FFC107'>Golden</span><span style='color:#344767'>Hour</span></html>");
+        logoLabel.setFont(new Font("SansSerif", Font.BOLD, 26)); 
+        
+        header.add(logoLabel);
+        sidebar.add(header);
+
+        // -- Navigation Items (Using Unicode Icons) --
+        sidebar.add(createNavButton("Dashboard", "HOME", "⊞", true)); // Default Active
+        sidebar.add(Box.createVerticalStrut(10));
+        
+        sidebar.add(createLabel("MANAGEMENT"));
+        sidebar.add(createNavButton("Attendance", "ATTENDANCE", "🕒", false));
+        sidebar.add(createNavButton("Stock Inventory", "STOCK", "📦", false));
+        sidebar.add(createNavButton("Stock Operations", "STOCK_OPS", "⇄", false));
+
+        // === NEW: MANAGER-ONLY SECTION ===
+        // Check if current user is a Manager
+        if (AuthService.getCurrentUser() != null && 
+            "Manager".equalsIgnoreCase(AuthService.getCurrentUser().getRole())) {
+            
+            sidebar.add(Box.createVerticalStrut(10));
+            sidebar.add(createLabel("ADMIN"));
+            // Add the new button
+            sidebar.add(createNavButton("Register Employee", "REGISTER_EMP", "👤", false));
+            sidebar.add(createNavButton("Manage Database", "DB_VIEWER", "🗄️", false));
+        }
+        // =================================
+
+        sidebar.add(Box.createVerticalStrut(10));
+
+        sidebar.add(createLabel("SALES"));
+        sidebar.add(createNavButton("Point of Sale", "POS", "🛒", false));
+        sidebar.add(createNavButton("Sales History", "SALES_HIST", "📜", false));
+
+        // -- Push Logout to Bottom --
+        sidebar.add(Box.createVerticalGlue());
+
+        // -- Logout Button --
+        ModernSidebarButton logoutBtn = new ModernSidebarButton("Log Out", "➜");
+        logoutBtn.setMaximumSize(new Dimension(240, 50));
+        logoutBtn.setAlignmentX(Component.LEFT_ALIGNMENT); // Align logout too
+        logoutBtn.setForeground(new Color(234, 6, 6)); // Red
+        logoutBtn.addActionListener(e -> {
+            dispose();
+            AuthService.logout();
+            new LoginFrame().setVisible(true);
+        });
+        sidebar.add(logoutBtn);
+        sidebar.add(Box.createVerticalStrut(30)); // Bottom padding
+
+        // === 2. MAIN CONTENT AREA (MODIFIED FOR BACKGROUND) ===
+        cardLayout = new CardLayout();
+        // Use BackgroundPanel here so the gaps between cards also show the image
+        mainContentPanel = new BackgroundPanel(); 
+        mainContentPanel.setLayout(cardLayout);
+        mainContentPanel.setBorder(new EmptyBorder(0,0,0,0)); // Remove padding here, let panels handle it
+
+        // Add Pages
+        mainContentPanel.add(new HomePanel(), "HOME");
+        mainContentPanel.add(new AttendancePanel(), "ATTENDANCE");
+        mainContentPanel.add(new StockPanel(), "STOCK");
+        mainContentPanel.add(new POSPanel(), "POS");
+        mainContentPanel.add(new StockOperationsPanel(), "STOCK_OPS");
+        mainContentPanel.add(new SalesHistoryPanel(), "SALES_HIST");
+        // === ADD THE NEW PANEL TO CARD LAYOUT ===
+        mainContentPanel.add(new RegisterEmployeePanel(), "REGISTER_EMP");
+        mainContentPanel.add(new DatabaseViewerPanel(), "DB_VIEWER");
+
+        add(sidebar, BorderLayout.WEST);
+        add(mainContentPanel, BorderLayout.CENTER);
+    }
+
+    private Component createLabel(String text) {
+        JLabel lbl = new JLabel(text);
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 11));
+        lbl.setForeground(new Color(160, 160, 160));
+        lbl.setBorder(new EmptyBorder(5, 30, 5, 0)); // Align with text
+        lbl.setAlignmentX(Component.LEFT_ALIGNMENT); // Critical for BoxLayout
+        return lbl;
+    }
+
+    private JButton createNavButton(String text, String cardName, String icon, boolean active) {
+        ModernSidebarButton btn = new ModernSidebarButton(text, icon);
+        btn.setMaximumSize(new Dimension(240, 50)); // Fixed width, nice height
+        btn.setAlignmentX(Component.LEFT_ALIGNMENT); // Critical for BoxLayout
+        btn.setActive(active);
+        
+        navButtons.add(btn); // Add to list so we can reset them later
+
+        btn.addActionListener(e -> {
+            // 1. Reset all buttons to inactive
+            for (ModernSidebarButton b : navButtons) {
+                b.setActive(false);
+            }
+            // 2. Set this one to active
+            btn.setActive(true);
+            
+            // 3. Switch Page
+            cardLayout.show(mainContentPanel, cardName);
+        });
+
+        return btn;
+    }
+}

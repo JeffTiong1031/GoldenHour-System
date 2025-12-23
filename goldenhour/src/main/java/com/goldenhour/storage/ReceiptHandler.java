@@ -1,6 +1,6 @@
 package com.goldenhour.storage;
 
-import com.goldenhour.categories.Sales;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

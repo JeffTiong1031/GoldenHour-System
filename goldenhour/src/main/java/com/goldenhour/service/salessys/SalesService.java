@@ -3,6 +3,7 @@ package com.goldenhour.service.salessys;
 import com.goldenhour.categories.*;
 import com.goldenhour.dataload.DataLoad;
 import com.goldenhour.storage.CSVHandler;
+import com.goldenhour.storage.DatabaseHandler;
 import com.goldenhour.storage.ReceiptHandler;
 
 import java.time.LocalDateTime;
@@ -156,11 +157,15 @@ public class SalesService {
             
             if (m != null) {
                 int current = m.getStock(outletCode);
-                m.setStock(outletCode, current - item.getQuantity());
+                int newStock = current - item.getQuantity();
+                m.setStock(outletCode, newStock);
+                
+                DatabaseHandler.updateStock(m.getModelCode(), outletCode, newStock); // ✅ DB WRITE
             }
 
             // 3. Save to Memory & File
             DataLoad.allSales.add(item);
+            DatabaseHandler.saveSale(item);
             CSVHandler.appendSale(item);
 
             // 4. Build Receipt Line

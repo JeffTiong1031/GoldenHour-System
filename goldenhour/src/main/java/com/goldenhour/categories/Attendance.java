@@ -8,6 +8,8 @@ public class Attendance {
     private String clockOutTime;
     private double hoursWorked;
 
+    public Attendance() {}
+
     // Constructor for creating new attendance record (clock in - 4 parameters)
     public Attendance(String employeeId, String employeeName, String date, String clockInTime) {
         this.employeeId = employeeId;
@@ -37,6 +39,11 @@ public class Attendance {
 
     public void setClockOutTime(String clockOutTime) { this.clockOutTime = clockOutTime; }
     public void setHoursWorked(double hoursWorked) { this.hoursWorked = hoursWorked; }
+    public void setDate(String date) { this.date = date; }
+    public void setClockInTime(String clockInTime) { this.clockInTime = clockInTime; }
+    public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
+    public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
+    
 
     public String toCSV() {
         return String.join(",", employeeId, employeeName, date, 

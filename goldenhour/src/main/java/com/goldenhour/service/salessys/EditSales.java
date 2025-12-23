@@ -3,11 +3,14 @@ package com.goldenhour.service.salessys;
 import com.goldenhour.categories.Sales;
 import com.goldenhour.dataload.DataLoad;
 import com.goldenhour.storage.CSVHandler;
+import com.goldenhour.storage.DatabaseHandler;
+
 import java.util.Scanner;
 
 public class EditSales {
 
-    public void editSaleInteractive(Scanner sc) {
+    public void editSales(Scanner sc) {
+
         System.out.println("\n=== Edit Sales Record ===");
         
         // 1. Get Identification Details
@@ -94,6 +97,7 @@ public class EditSales {
         if (changed) {
             // Since we modified the object inside DataLoad.allSales, 
             // the memory is ALREADY updated. We just need to save to disk.
+            DatabaseHandler.updateSale(targetSale, date, customer, model);
             CSVHandler.writeSales(DataLoad.allSales);
             System.out.println("Sale record updated \u001B[32msuccessfully!\u001B[0m");
         }

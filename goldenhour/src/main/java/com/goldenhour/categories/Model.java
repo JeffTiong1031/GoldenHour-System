@@ -33,6 +33,10 @@ public class Model {
         return price;
     }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
 
     public Map<String, Integer> getStockPerOutlet() {
         return stockPerOutlet;

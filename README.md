@@ -1,377 +1,248 @@
-# Golden Hour Store Management System
 
-A simple, console-based (as of now) inventory and sales system for store operations. It manages employees, stock, and outlets, storing all primary data in CSV files. 
+![Golden Hour Banner](goldenhour/image/banner.png)
+# 🏪 Golden Hour Store Management System
 
----
+> Java-based luxury watch retail management system
 
-## 🚀 Features
-
-* **Authentication:** Secure employee login and registration.
-* **Attendance:** Clock-in and clock-out tracking for employees.
-* **Stock Management:** Track inventory with stock counts and stock movement.
-* **Sales:** Process new sales and record them to CSV and text-based receipts.
-* **Search Information:** 
-* **Edit Information:**
-* **Storage System:** All data is read from and saved to local `.csv` files.
-* **Data Load State:** Right after system start, the data is loaded into list 
+**[📃 Overview](#-overview) | [🚀 Functionality](#-functionality) | [🤝 Contributing](#-contributing)**
 
 ---
 
-## 🏗️ How It Works: Architecture
+# 📋 Overview
 
-The application is split into several key packages, each with a distinct responsibility.
+## ✨ Quick Highlights
+- **🔐 Authentication:** Employee login/registration
+- **⏱️ Attendance:** Clock in/out with SQL persistence
+- **📦 Inventory:** Stock counts and transfers
+- **💳 Sales:** Transactions with receipts
+- **🔍 Search:** Employees, products, and sales
+- **✏️ Editing:** Update inventory, pricing, and employee info
+- **🔄 Hybrid Storage:** SQLite = source of truth; CSV = backup/export
 
-### Key Folder Overview
+## 💻 Tech Stack
+| Component | Technology |
+|-----------|------------|
+| Language | Java 11+ |
+| Build | Maven 3.6+ |
+| Database | SQLite 3 (primary) + CSV (backup) |
+| UI | Console/Swing |
+| Data Format | CSV + SQL |
 
-* **`main`**: The application's entry point (`Main.java`) that launches the UI.
-* **`categories`**: Contain classes that represent for each object. (e.g., `Employee`, `Stock`).
-* **`service`**: The feature logic. All operations (logging in, adding stock, making a sale) are handled by these classes.
-* **`ui`**: The user-facing console interface. These classes handle user input and display.
-* **`util`**: Helper classes, such as `TimeUtil`.
-* **`data`**: (Directory) Contains all persistent data as `.csv` files.
+## 📂 Project Stats
+- **Modules:** main, categories, service, storage, ui, dataload, utils, gui
+- **Storage:** SQLite primary; CSV backup/export
+- **Data Sync:** One-time CSV → SQLite migration; runtime uses SQLite
+- **Architecture:** Layered (UI → Service → Storage → DataLoad)
 
-### 📂Project Structure
 
+## 🖼 Snippets 
+![Golden Hour Banner](goldenhour/image/loginpage.png)
+
+
+![Golden Hour Banner](goldenhour/image/dashboard.png)
+---
+
+## 🏎️ Project Roadmap & Status
+
+### ✅ Completed Features
+- [x] **User Auth:** Login/Logout & Employee Registration
+- [x] **Attendance:** Attendance Log
+- [x] **Inventory:** Stock management system
+- [x] **Sales:** Sale system
+- [x] **Data Management:** Search, Edit, and Persistent Storage
+- [x] **UX:** Loading states and Sales History filtering
+
+### 🔄 In Progress / Upcoming
+- [ ] **GUI:** Comprehensive Graphical User Interface
+- [ ] **Automation:** Auto-emailing reports to Headquarters
+- [ ] **Analytics:** Visual data analytics & charts
+- [ ] **Performance:** Employee performance metric tracking
+
+---
+
+# ⚙️ Functionality
+
+## System Architecture
+```
+┌──────────────────────────────────┐
+│      User Interface (UI)         │ ← Console/GUI
+├──────────────────────────────────┤
+│     Service Layer (Logic)        │ ← Business ops
+│  Auth, Sales, Stock, Attendance  │
+├──────────────────────────────────┤
+│     Storage Layer (I/O)          │ ← Persistence
+│     DatabaseHandler (SQLite),    |
+|     CSVHandler (backup)          │
+├──────────────────────────────────┤
+│   In-Memory Cache (DataLoad)     │ ← Fast access
+│     Static lists of all data     │
+└──────────────────────────────────┘
+```
+
+## 🆕 Updates 
+### ⏩ Run Program
+There are two entry points as of now :
+`Main.java` & `MainGUI.java`
+
+Choose either one to start the program
+
+### 🆕 Hybrid Storage Model
+SQLite is the primary store; CSV is backup/export. Migration from CSV to SQLite is a one-time operation via `SyncDataCSVSQL`. **Note: Migration has been completed, only run this when you want to sync SQL with CSV**
+
+
+## 🚀 Core Workflows Simplified
+
+### 1️⃣ Startup & Data Loading
+```
+Main.java starts
+  ↓
+DatabaseHandler.connect/query → Load from SQLite
+  ↓
+DataLoad.fetchallxxx() → In-memory lists ready
+  ↓
+LoginUI displayed (system ready)
+```
+
+### 2️⃣ Authentication
+```
+LoginUI → AuthService.login(id, password)
+  ↓
+Search DataLoad.allEmployees (in-memory)
+  ↓
+Validate and proceed
+```
+
+### 3️⃣ Attendance Logging
+```
+AttendanceUI → clock in/out
+  ↓
+AttendanceService → create record (timestamp)
+  ↓
+Persist to SQLite (primary)
+  ↓
+Update CSV (backup)
+```
+
+### 4️⃣ Stock Management
+```
+StockUI → count/transfer/search
+  ↓
+Services update Model/Stock in DataLoad
+  ↓
+Persist changes to SQLite (CSV as backup)
+  ↓
+ReceiptHandler → text receipts (as needed)
+```
+
+### 5️⃣ Sales Processing
+```
+SalesUI → product + qty
+  ↓
+SalesService → create sale, update inventory
+  ↓
+Persist to SQLite
+  ↓
+ReceiptHandler → sales receipt
+  ↓
+Update CSV (backup)
+```
+
+### 6️⃣ Search Operations
+```
+SalesSearch/StockSearch → iterate DataLoad (in-memory)
+  ↓
+Return matches (no disk I/O)
+```
+
+### 7️⃣ Data Editing
+```
+EditXXX → select item + new values
+  ↓
+Service finds object in DataLoad and updates via setters
+  ↓
+Persist to SQLite
+  ↓
+Optional CSV export (backup)
+```
+
+## Data Models (POJOs)
+| Entity | Fields | Storage |
+|--------|--------|---------|
+| Employee | id, name, role, password | SQLite (primary), CSV (backup) |
+| Model | code, name, price, outlet | SQLite (primary), CSV (backup) |
+| Outlet | code, name | SQLite |
+| Stock | model_code, outlet_code, quantity | SQLite |
+| Sales | id, model_code, qty, total, timestamp | SQLite (primary), CSV (backup) |
+| Attendance | emp_id, date, clock_in, clock_out | SQLite (primary), CSV (backup) |
+
+## Key Classes
+| Package | Class | Responsibility |
+|---------|-------|----------------|
+| main | `Main.java` | Entry point |
+| main | `MainGUI.java` | Entry point GUI |
+| main | `SyncDataCSVSQL.java` | One-time CSV → SQLite migration |
+| categories | `Employee.java`, `Model.java`, `Sales.java`, `Attendance.java`, `Outlet.java` | POJOs with `fromCSV()`/`toCSV()` |
+| service/attendance | `AttendanceService.java` | Attendance logic |
+| service/loginregister | `AuthService.java`, `RegistrationService.java` | Auth/registration |
+| service/salessys | `SalesService.java`, `SalesSearch.java` | Sales ops |
+| service/stocksys | `StockCountService.java`, `StockMovementService.java`, `StockSearch.java` | Inventory ops |
+| storage | `DatabaseHandler.java` | SQLite CRUD/schema |
+| storage | `CSVHandler.java` | CSV backup/export |
+| storage | `ReceiptHandler.java` | Receipt generation |
+| dataload | `DataLoad.java` | In-memory cache of runtime data |
+| ui | `LoginUI.java`, `SalesUI.java`, `StockUI.java`, `SearchUI.java`, `AttendanceUI.java`, `EditUI.java` | Console UI |
+
+## Data Flow Summary
+- **Read:** Populate `DataLoad` from SQLite via `DatabaseHandler` (no CSV reads at runtime).
+- **Write:** Services persist to SQLite; CSV used only for backup/export.
+- **Query:** Use SQLite for complex queries; UI reads from `DataLoad`.
+- **Backup:** CSV serves solely as export/backup.
+
+---
+
+# 🤝 Contributing
+
+## Getting Started
 ```bash
-GoldenHour-System/
-└── goldenhour/                  ← Maven project root
-    ├── pom.xml                  ← Maven configuration
-    ├── src/main/java/com/goldenhour/
-    │   ├── main/                ← Application entry point
-    │   │   └── Main.java
-    │   ├── categories/          ← Data models (POJOs)
-    │   │   └── Employee.java
-    │   │   └── Model.java
-    │   │   └── Outlet.java
-    │   │   └── Sales.java
-    │   │   └── Attendance.java
-    │   │── dataload/             ← Data Loading once start
-    |   |   └── DataLoad.java
-    │   ├── service/             ← Features
-    |   |   └── attendance
-    |   |       └── AttendanceService.java
-    |   |   └── loginregister
-    |   |       └── AuthService.java
-    |   |       └── RegistrationService.java
-    |   |   └── salessys
-    |   |       └── SalesService.java
-    |   |       └── SalesSearch.java
-    |   |   └── stocksys
-    |   |       └── StockCountService.java
-    |   |       └── StockMovementService.java
-    |   |       └── StockSearch.java
-    |   ├── storage/                          ← API between java and CSV
-    |   |       └── CSVHandler.java
-    |   |       └── ReceiptHandler.java       
-    │   ├── ui/                  ← Console UI pages
-    │   │   └── AttendanceUI.java
-    │   │   └── LoginUI.java
-    │   │   └── StockUI.java
-    │   │   └── SalesUI.java
-    │   │   └── SearchUI.java
-    │   └── util/                ← Utility helpers
-    │       └── TimeUtil.java
-    └── data/                    ← CSV data storage
-        └── receipts/
-        └── employee.csv
-        └── model.csv
-        └── outlet.csv
-        └── sales.csv
-        └── attendance.csv
-
-```
-
----
-
-## 🔄 Key Workflows
-
-**As of now**, here’s how the components interact during common operations.
-
-### 1. Data Load State
-
-1.  When the program starts, `Main.java` is executed.
-2.  **Data Loading:** The system calls `CSVHandler.java` to read all CSV files (`stock.csv`, `employees.csv`,`outlets.csv`)
-3. **Object Conversion:** The handlers convert the raw CSV data into POJO objects (`Employee`,`Model`,`Outlet`)
-4. **Central Runtime Storage:** These lists of objects are stored into the static lists within `DataLoad.java`.
-5.  `LoginUI` is run, which displays the main menu (e.g., "Login")
-
-### 2. User Login/Logout + Registration
-
-1.  **`LoginUI`**: Prompts the user for an ID and password.
-2.  **`AuthService`**: The UI calls `authService.login(id, password)`.
-3. **Data Retrieval:** Instead of reading a file, `AuthService` accesses the preloaded list : `DataLoad.allEmployees`
-4.  **`AuthService`**: Compares the user's input to the list of `Employee` objects to find a match.
-6.  **`LoginUI`**: Receives a success/failure response and either proceeds to the main menu or shows an error.
-
-### 3. Attendance Log
-
-
-### 4. Stock Management System
-
-1.  **`StockUI`**: The user selects the service from a stock system
-2.  **`Morning/Night Stock Count`**: System proceed to `StockCountService.performStockCount(...)` 
-3. **`Stock In/Stock Out`** : The 
-3.  **`storage` (CSVHandler)**: The service updates `data/model.csv` (when stock moves from A to B)
-4.  **`storage` (ReceiptHandler)**: The service also appends a human-readable receipt to a `.txt` file using `ReceiptHandler`
-
-### 4. Sales System
-
-### 5. Search Information
-
-### 6. Edit Information
-
-### 7. Storage System
-
-
----
-
-## ⛓️ Architecture & Components
-### Concept: Classes & Objects (OOP)
-
-### 1. Class Structure
-
-- Data Classes (POJOs) - `com.goldenhour.categories`
-
-  - Blueprints for data (`Employee`, `Model`, `Outlet`)
-  - Rule: Must contain `fromCSV(String line)` and `toCSV()` methods for converting data
-
-- Service Classes - `com.goldenhour.service`
-  - Handle logic (`AuthService`, `StockCountService`).
-  - Rule: Do not read files directly. Retrieve data from `DataRepository` and save data via `CSVHandler`
-
-- Storage/Utility - `com.goldenhour.storage`
-  - `CSVHandler`: The central engine for file I/O
-  - `DataRepository:` Static lists holding all data in memory
-
-
---- 
-
-## 📊 Data Flow
-### Concept : IO handling
-
-We use an "Eager Loading" pattern. Data is loaded once at startup, and services read from memory.
-
----
-
-### Reading Data (Startup)
-
-- When: Only when Main.java starts
-- Flow: `Main` calls `CSVHandler` -> `CSVHandler` read files & uses `POJO.fromCSV()` -> Objects stored in `DataLoad`  
-- Result: All data is ready in memory (RAM) for instat access
-
-### Processing Data (Runtime)
-
-- When: A user logs in or counts stock
-- Flow: `Service` requests data -> `DataLoad` returns the ArrayList -> `Service` processes logic
-- Note: No file I/O happens here.
-
-### Writing Data (Updating/Insert Data)
-
-- When: A user registers, updates stock, or make sale
-- Flow: `Service` updates the Object -> `Service` calls `CSVHandler.write...` -> `CSVHandler` uses `object.toCSV()` -> File is overwritten
-
-### Note : The CSV handling logic operates on a **line-by-line** basis. The `CSV Handler` iterates through each file, and the `fromCSV()` method is designed to parse a single row of text into a corresponding Java object.
-
----
-
-## 👷‍♂️ Developer Guide: Adding New Features
-
-### For Sales System (2 marks) /Attendance System (1/2 marks)
-
-When adding new features (eg. Sales), you must follow this pattern to maintain data consistency. Do not write your own file readers
-
-**Step 1: Create POJO** Work on `example: Sales.java` in categories. Implemented the standard conversion methods:
-
-**Step 2: Update the Handler** Go to `CSVHandler.java` (or create SalesHandler)
-
-```
-public String toCSV() { ... }
-public static Sales fromCSV(String line) { ... }
-```
-
-**Step 3: Update DataLoad** Add a list in `DataLoad.java`
-
-```
-example: public static List<Sales> allSales;
-```
-
-**Step 4: Load at startup** Add one line in Main.java
-
-```
-example: DataLoad.allSales = CSVHandler.readSales();
-```
-<br>
-
-### For Search Information (1 mark)
-Because all data is loaded into `DataLoad.java` at startup, "Searching" simply means iterating through the static lists (`allModels` or `allSales`) and finding matches.
-
-**Step 1: Service** Create method in service (eg. `findStockbyModel.java` in `StockSearch.java`)
-
-**Step 2: Logic** Loop through `DataLoad.allSales`
-
-**Step 3: Comparison** Check if matches the user input
-
-**Step 4: Display result**
-
-<br>
-
-### For Edit Information (1 mark)
-
-**Step 1: Find** The service searches the `DataLoad` list to find the specific object (using ID or Code).
-
-**Step 2: Modify** The service uses object's (POJO) **Setter methods** (eg, `setPrice()`, `setQuantity()`) to update data in memory
-
-**Step 3: Overwrite** The service passes the entire updated list to the `CSVHandler`, which completely overwrites the old CSV with the new data. 
-
-<br>
-
-### Note: Marks allocated for each features does not reflect the actual workload. 
-
----
-
-## 🤝 How to Contribute
-
-### 🛠️ Part 1: First-Time Setup
-
-#### **Do this only once**
-
-
-1. **Clone your repo** Since you are a collaborator of this repo now, clone the main repo directly :
-
-```
+# Clone
 git clone https://github.com/zerngit/GoldenHour-System.git
+cd GoldenHour-System
 
-cd YOUR_OWN_PATH\GoldenHour-System
+# Build
+cd goldenhour
+mvn clean install
+
+# Run (app)
+mvn exec:java -Dexec.mainClass="com.goldenhour.main.Main"
+
+# One-time migration (optional)
+mvn exec:java -Dexec.mainClass="com.goldenhour.main.SyncDataCSVSQL"
 ```
-2. Setup Your IDE
-  - **VS Code Users** : File -> Open Folder -> open the `GoldenHour-System` folder
 
-  - **NetBeans Users**: 
-    1. After open project, right click project in the left sidebar 
-    2. Select `Properties`
-    3. go to `Run` Category
-    4. Under `Working Directory` field, change `...\GoldenHour-System\goldenhour` to `\GoldenHour-System` (remove the goldenhour)
-
-
-3. **Connect to Your branch:** I have already created branches for your specific features. Run these commands to see them and switch to yours: 
-```
-# 1. Update your list of branches
+## Branches
+```bash
 git fetch origin
-
-# 2. Switch to your assigned branch (Run ONE of these)
-git checkout feature/salessys      # For Sales 
-git checkout feature/search        # For Search 
-git checkout feature/edit          # For Edit/Update 
-git checkout feature/attendance            # For Attendance 
-
+git checkout feature/YOUR_FEATURE # edit YOUR_FEATURE to the feature you work on
 ```
 
-### 🔄 Part 2: Daily Workflow
-
-**Follow this loop everytime you sit down to code**
-
-1. **Sync with Main** Before you write a single line of code, get the latest update from the rest of the team. This prevents messy conflict later.
-
-```
-# 1. Go to main and get updates
+## Daily Workflow
+```bash
 git checkout main
 git pull origin main
-
-# 2. Go back to your branch and merge those updates in
-git checkout feature/your-branch-name
+git checkout feature/your-branch
 git merge main
-```
 
-2. **Working on your feature**
-
-3. **Add -> commit -> push**
-```
+# Work, then:
 git add .
-git commit -m "please specify what you have done" 
-git push --set-upstream origin feature/feature name
+git commit -m "Describe changes"
+git push -u origin feature/your-branch
 ```
-**Note: Never push to `main` directly!**
 
-### 🚀 Part 3: Submitting Your Feature
-When your feature is 100% complete and tested:
-
-1. Go to the `Pull Requests` tab on Github
-2. Click `New Pull Request`
-3. **Base**: `main` ⬅️ **Compare**: `feature/feature_name`.
-4. **Title**: `[Feature] XXX Complete` (or similar)
-5. **Reviewers**: Select `zerngit` on the right sidebar
-6. Click `Create Pull Request`
+## Submit a PR
+- Base: `main` ← Compare: `feature/your-branch`
+- Title: `[Feature] <name> Complete`
+- Request review from `zerngit`
 
 ---
-## 🚨 Migration Guide: Switching from Fork to Collaborator
 
-
-**Who is this for?**: who **Forked the repo initially** AND **have already written code** on their computer 
-
-**Goal**: Disconnect your Git from your personal Forkand connect it directly to Main Repository
-
-### Step 1: Save your current work (Crucial!)
-Before we change any settings, let's make sure the code currently on your screen is saved.
-
-```bash
-git add .
-git commit -m "Final save before migrating to main repo"
-```
-(if it says "nothing to commit", it means you were already saved.)
-
-**Step 2. Check your connection**
-
-Open terminal and type: 
-
-```
-git remote -v
-```
-- **Scenario A** : You see `origin ... your-username/GoldenHour-System`, 
-  - 👉 **Action**: Go to **Step 3**.
-
-- **Scenario B** : You see `origin ... zerngit/GoldenHour-System`, 
-  - 👉 **Action**: Go to **Step 5**.
-
-**Step 3: Re-wire your "Origin"**
-
-We will remove link to your fork and point it to the main project
-
-  1. **Remove the old link to your fork**
-  ```
-  git remote remove origin 
-  ```
-
-  2. **Add the new link to the Main Repo**
-
-  ```
-  git remote add origin https://github.com/zerngit/GoldenHour-System.git
-  ```
-
-  3. **Verify** : Run `git remote -v` again. It should now show `zerngit/GoldenHour-System`
-
-**Step 4: Rename your branch**
-
-You cannot push to `main`. You must ensure your code is on the correct **Feature Branch**
-
-  1. **Redirect to your assigned branch**
-  ```
-  git branch -m feature/your_feature_name
-  ```
-
-**Step 5: Sync and Push**
-
-Now that you are connected to the main repo and on the right branch name:
-
-  1. **Get the latest update**
-
-  ```
-  git fetch origin
-  ```
-
-  2. **Push your code**
-
-  ```
-  git push -u origin feature/your_feature_name --force
-  ```
-
-  **Note: Use `--force` only this one time to overwrite the empty placeholder branch**
+**Last Updated:** December 23, 2025 | **Version:** 2.0.0-Beta

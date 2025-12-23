@@ -11,6 +11,9 @@ public class Sales {
     private String transactionMethod;
     private String employee;
 
+    public Sales() {
+
+    }
     public Sales(String date, String time, String customerName, String model,
                  int quantity, double subtotal, String transactionMethod, String employee) {
         this.date = date;
@@ -40,6 +43,8 @@ public class Sales {
     public void setSubtotal(double subtotal) { this.subtotal = subtotal; }
     public void setTransactionMethod(String transactionMethod) { this.transactionMethod = transactionMethod; }
     public void setEmployee(String employee) { this.employee = employee; }
+    public void setDate(String date) { this.date = date; }
+    public void setTime(String time) { this.time = time; }
 
     public String toCSV() {
         return String.join(",",

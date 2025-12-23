@@ -1,0 +1,15 @@
+=== Sales Receipt ===
+Date: 2025-12-23
+Time: 12:00 AM
+Outlet: C60
+Customer: david beckham
+----------------------------------
+ITEMS PURCHASED:
+SW2400-1           x 3   RM  2367.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 2367.00
+Method: E-Wallet
+Employee: Test Manager
+
+--------------------------------------------------
