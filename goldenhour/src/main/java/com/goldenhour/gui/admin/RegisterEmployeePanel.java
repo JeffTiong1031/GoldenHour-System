@@ -15,8 +15,18 @@ public class RegisterEmployeePanel extends BackgroundPanel {
 
     private JTextField nameField, idField, passField;
     private JComboBox<String> roleCombo;
+    private DatabaseViewerPanel databaseViewerPanel;
+
+    public RegisterEmployeePanel(DatabaseViewerPanel databaseViewerPanel) {
+        this.databaseViewerPanel = databaseViewerPanel;
+        initializeUI();
+    }
 
     public RegisterEmployeePanel() {
+        this(null);
+    }
+
+    private void initializeUI() {
         setLayout(new GridBagLayout()); // Center the card
         setBorder(new EmptyBorder(30, 30, 30, 30));
 
@@ -122,6 +132,11 @@ public class RegisterEmployeePanel extends BackgroundPanel {
         DatabaseHandler.saveEmployee(newEmployee);
         CSVHandler.writeEmployees(DataLoad.allEmployees);
         JOptionPane.showMessageDialog(this, "Employee Registered Successfully!\nName: " + name + "\nID: " + id);
+        
+        // Refresh database viewer if available
+        if (databaseViewerPanel != null) {
+            databaseViewerPanel.refreshData();
+        }
         
         // Clear fields
         nameField.setText("");

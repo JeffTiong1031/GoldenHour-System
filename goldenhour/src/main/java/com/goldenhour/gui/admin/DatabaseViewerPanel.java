@@ -135,6 +135,10 @@ public class DatabaseViewerPanel extends BackgroundPanel {
 
     // --- LOGIC METHODS ---
 
+    public void refreshData() {
+        loadTableData();
+    }
+
     private void refreshOutletCombo() {
         outletFilter.removeAllItems();
         outletFilter.addItem("All Outlets");

@@ -24,6 +24,7 @@ public class MainDashboardFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel sidebar;
     private List<SidebarButton> navButtons = new ArrayList<>();
+    private DatabaseViewerPanel databaseViewerPanel;
 
     public MainDashboardFrame() {
         setTitle("Golden Hour System");
@@ -127,8 +128,9 @@ public class MainDashboardFrame extends JFrame {
         mainContentPanel.add(new StockOperationsPanel(), "STOCK_OPS");
         mainContentPanel.add(new SalesHistoryPanel(), "SALES_HIST");
         // === ADD THE NEW PANEL TO CARD LAYOUT ===
-        mainContentPanel.add(new RegisterEmployeePanel(), "REGISTER_EMP");
-        mainContentPanel.add(new DatabaseViewerPanel(), "DB_VIEWER");
+        databaseViewerPanel = new DatabaseViewerPanel();
+        mainContentPanel.add(new RegisterEmployeePanel(databaseViewerPanel), "REGISTER_EMP");
+        mainContentPanel.add(databaseViewerPanel, "DB_VIEWER");
 
         add(sidebar, BorderLayout.WEST);
         add(mainContentPanel, BorderLayout.CENTER);
@@ -161,6 +163,11 @@ public class MainDashboardFrame extends JFrame {
             
             // 3. Switch Page
             cardLayout.show(mainContentPanel, cardName);
+            
+            // 4. Refresh database viewer if switching to it
+            if ("DB_VIEWER".equals(cardName) && databaseViewerPanel != null) {
+                databaseViewerPanel.refreshData();
+            }
         });
 
         return btn;
@@ -176,7 +183,7 @@ public class MainDashboardFrame extends JFrame {
                 (cardName.equals("STOCK_OPS") && btn.getText().equals("Stock Operations")) ||
                 (cardName.equals("SALES") && btn.getText().equals("Sales")) ||
                 (cardName.equals("REGISTER_EMP") && btn.getText().equals("Register Employee")) ||
-                (cardName.equals("DB_VIEWER") && btn.getText().equals("Database Viewer"))) {
+                (cardName.equals("DB_VIEWER") && btn.getText().equals("Manage Database"))) {
                 btn.setActive(true);
             } else {
                 btn.setActive(false);
