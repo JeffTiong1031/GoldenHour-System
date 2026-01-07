@@ -441,8 +441,12 @@ public class StockOperationsPanel extends BackgroundPanel {
             if (target != null) {
                 // Update Memory
                 if (currentMoveType == MoveType.STOCK_IN) {
+                    // FIX: Deduct from HQ (source)
+                    target.setStock(from, target.getStock(from) - qty);
+                    // Add to outlet (destination)
                     target.setStock(to, target.getStock(to) + qty);
                 } else {
+                    // Stock Out: outlet to outlet
                     target.setStock(from, target.getStock(from) - qty);
                     target.setStock(to, target.getStock(to) + qty);
                 }
@@ -459,31 +463,31 @@ public class StockOperationsPanel extends BackgroundPanel {
         }
         com.goldenhour.storage.CSVHandler.writeStock(DataLoad.allModels);
 
-        // 5. Build Receipt String (CLI Format)
-        String receipt = "=== " + type + " ===\n" +
-                "Date: " + date + "\n" +
-                "Time: " + time + "\n" +
-                "From: " + from + " (" + fromName + ")\n" +
-                "To: " + to + " (" + toName + ")\n" +
-                "Models:\n" + String.join("\n", movementDetails) + "\n" +
-                "Total Quantity: " + totalQty + "\n" +
-                "Employee in Charge: " + employee;
+            // 5. Build Receipt String (CLI Format)
+            String receipt = "=== " + type + " ===\n" +
+                    "Date: " + date + "\n" +
+                    "Time: " + time + "\n" +
+                    "From: " + from + " (" + fromName + ")\n" +
+                    "To: " + to + " (" + toName + ")\n" +
+                    "Models:\n" + String.join("\n", movementDetails) + "\n" +
+                    "Total Quantity: " + totalQty + "\n" +
+                    "Employee in Charge: " + employee;
 
-        // 6. Save Receipt
-        ReceiptHandler.appendReceipt(receipt);
+            // 6. Save Receipt
+            ReceiptHandler.appendReceipt(receipt);
 
-        // 7. Show Receipt UI
-        JTextArea receiptArea = new JTextArea(receipt);
-        receiptArea.setEditable(false);
-        receiptArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        JScrollPane scrollReceipt = new JScrollPane(receiptArea);
-        scrollReceipt.setPreferredSize(new Dimension(350, 400));
+            // 7. Show Receipt UI
+            JTextArea receiptArea = new JTextArea(receipt);
+            receiptArea.setEditable(false);
+            receiptArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            JScrollPane scrollReceipt = new JScrollPane(receiptArea);
+            scrollReceipt.setPreferredSize(new Dimension(350, 400));
 
-        JOptionPane.showMessageDialog(this, scrollReceipt, "Transaction Receipt", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(this, scrollReceipt, "Transaction Receipt", JOptionPane.PLAIN_MESSAGE);
 
-        // 8. Clear UI
-        transferCartModel.setRowCount(0);
-        checkCartState();
+            // 8. Clear UI
+            transferCartModel.setRowCount(0);
+            checkCartState();
     }
 
     private String getOutletName(String code) {

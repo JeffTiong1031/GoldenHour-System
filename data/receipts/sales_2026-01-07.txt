@@ -1,0 +1,15 @@
+=== Sales Receipt ===
+Date: 2026-01-07
+Time: 03:27 pm
+Outlet: C60
+Customer: Wong Kwang Zhen
+----------------------------------
+ITEMS PURCHASED:
+SW2400-1           x 1   RM   789.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 789.00
+Method: Card
+Employee: Megan Mei
+
+--------------------------------------------------
