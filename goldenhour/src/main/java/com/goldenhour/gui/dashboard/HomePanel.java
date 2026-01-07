@@ -110,21 +110,60 @@ public class HomePanel extends JPanel {
         titleBox.add(title); titleBox.add(sub);
         header.add(titleBox, BorderLayout.WEST);
 
-        // FILTER DROPDOWN
-        String[] filters = {"Year", "Month", "Week", "Day"};
-        JComboBox<String> filterBox = new JComboBox<>(filters);
+        // YEAR AND FILTER DROPDOWNS
+        JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        controlsPanel.setOpaque(false);
+        
+        // Year Selection Dropdown
+        int currentYear = LocalDate.now().getYear();
+        String[] years = {String.valueOf(currentYear - 1), String.valueOf(currentYear)}; // 2025, 2026
+        JComboBox<String> yearBox = new JComboBox<>(years);
+        yearBox.setSelectedItem(String.valueOf(currentYear)); // Default to current year
+        yearBox.setFont(new Font("SansSerif", Font.BOLD, 12));
+        yearBox.setBackground(Color.WHITE);
+        yearBox.setFocusable(false);
+        
+        // Filter Dropdown (conditional)
+        JComboBox<String> filterBox = new JComboBox<>();
         filterBox.setFont(new Font("SansSerif", Font.BOLD, 12));
         filterBox.setBackground(Color.WHITE);
         filterBox.setFocusable(false);
         
         // INTERACTIVE GRAPH
         SmoothGraphPanel graph = new SmoothGraphPanel();
-        filterBox.addActionListener(e -> graph.setFilter((String) filterBox.getSelectedItem()));
         
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        filterPanel.setOpaque(false);
-        filterPanel.add(filterBox);
-        header.add(filterPanel, BorderLayout.EAST);
+        // Update filter options based on selected year
+        Runnable updateFilterOptions = () -> {
+            String selectedYear = (String) yearBox.getSelectedItem();
+            filterBox.removeAllItems();
+            if (selectedYear.equals(String.valueOf(currentYear))) {
+                // Current year: show all options
+                filterBox.addItem("Year");
+                filterBox.addItem("Month");
+                filterBox.addItem("Week");
+                filterBox.addItem("Day");
+                filterBox.setSelectedItem("Year");
+            } else {
+                // Previous year: only show Year view (Total Annual Income)
+                filterBox.addItem("Year");
+                filterBox.setSelectedItem("Year");
+            }
+            graph.setYearAndFilter(selectedYear, (String) filterBox.getSelectedItem());
+        };
+        
+        // Initialize filter options
+        updateFilterOptions.run();
+        
+        // Event listeners
+        yearBox.addActionListener(e -> updateFilterOptions.run());
+        filterBox.addActionListener(e -> graph.setYearAndFilter((String) yearBox.getSelectedItem(), (String) filterBox.getSelectedItem()));
+        
+        controlsPanel.add(new JLabel("Year:"));
+        controlsPanel.add(yearBox);
+        controlsPanel.add(new JLabel("View:"));
+        controlsPanel.add(filterBox);
+        
+        header.add(controlsPanel, BorderLayout.EAST);
 
         card.add(header, BorderLayout.NORTH);
         card.add(graph, BorderLayout.CENTER);
@@ -228,6 +267,7 @@ public class HomePanel extends JPanel {
 
     private class SmoothGraphPanel extends JPanel {
         private String currentFilter = "Year";
+        private String selectedYear;
         private final List<Point2D.Double> points = new ArrayList<>();
         private final List<String> labels = new ArrayList<>();
         private final Object dataLock = new Object();
@@ -246,6 +286,7 @@ public class HomePanel extends JPanel {
         
         public SmoothGraphPanel() {
             setOpaque(false);
+            selectedYear = String.valueOf(LocalDate.now().getYear()); // Initialize with current year
             
             MouseAdapter ma = new MouseAdapter() {
                 @Override
@@ -283,7 +324,8 @@ public class HomePanel extends JPanel {
             refreshData();
         }
 
-        public void setFilter(String filter) {
+        public void setYearAndFilter(String year, String filter) {
+            this.selectedYear = year;
             this.currentFilter = filter;
             this.zoom = 1.0;
             this.xOffset = 0;
@@ -296,7 +338,7 @@ public class HomePanel extends JPanel {
                 points.clear();
                 labels.clear();
                 Map<String, Double> aggData = new LinkedHashMap<>();
-                LocalDate now = LocalDate.now();
+                int targetYear = Integer.parseInt(selectedYear);
                 if (DataLoad.allSales == null) DataLoad.allSales = new ArrayList<>();
 
                 // =============================================================
@@ -307,7 +349,7 @@ public class HomePanel extends JPanel {
                     for (Sales s : DataLoad.allSales) {
                         try {
                             LocalDate d = LocalDate.parse(s.getDate());
-                            if (d.getYear() == now.getYear()) 
+                            if (d.getYear() == targetYear) 
                                 aggData.merge(String.valueOf(d.getMonthValue()), s.getSubtotal(), Double::sum);
                         } catch (Exception ignored) {}
                     }
@@ -322,12 +364,14 @@ public class HomePanel extends JPanel {
                 //  2. MONTH VIEW (1st - 31st)
                 // =============================================================
                 else if (currentFilter.equals("Month")) {
-                    int days = now.lengthOfMonth();
+                    LocalDate now = LocalDate.now();
+                    LocalDate targetDate = LocalDate.of(targetYear, now.getMonth(), 1);
+                    int days = targetDate.lengthOfMonth();
                     for(int i=1; i<=days; i++) aggData.put(String.valueOf(i), 0.0);
                     for (Sales s : DataLoad.allSales) {
                         try {
                             LocalDate d = LocalDate.parse(s.getDate());
-                            if (d.getYear() == now.getYear() && d.getMonth() == now.getMonth()) 
+                            if (d.getYear() == targetYear && d.getMonth() == now.getMonth()) 
                                 aggData.merge(String.valueOf(d.getDayOfMonth()), s.getSubtotal(), Double::sum);
                         } catch (Exception ignored) {}
                     }
@@ -342,6 +386,7 @@ public class HomePanel extends JPanel {
                 //  3. WEEK VIEW (Monday - Sunday of Current Week)
                 // =============================================================
                 else if (currentFilter.equals("Week")) {
+                    LocalDate now = LocalDate.now();
                     String[] days = {"MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"};
                     String[] shortDays = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
                     for(String d : days) aggData.put(d, 0.0);
@@ -353,8 +398,8 @@ public class HomePanel extends JPanel {
                     for (Sales s : DataLoad.allSales) {
                         try {
                             LocalDate d = LocalDate.parse(s.getDate());
-                            // Check if date falls within this week range (Inclusive)
-                            if (!d.isBefore(startOfWeek) && !d.isAfter(endOfWeek)) {
+                            // Check if date falls within this week range (Inclusive) and matches target year
+                            if (d.getYear() == targetYear && !d.isBefore(startOfWeek) && !d.isAfter(endOfWeek)) {
                                 aggData.merge(d.getDayOfWeek().name(), s.getSubtotal(), Double::sum);
                             }
                         } catch (Exception ignored) {}
@@ -370,10 +415,11 @@ public class HomePanel extends JPanel {
                 //  4. DAY VIEW (Hourly 00:00 - 23:00)
                 // =============================================================
                 else if (currentFilter.equals("Day")) {
+                    LocalDate now = LocalDate.now();
                     for(int i=0; i<24; i++) aggData.put(String.format("%02d", i), 0.0);
                     
                     for (Sales s : DataLoad.allSales) {
-                        if (s.getDate().equals(now.toString())) {
+                        if (s.getDate().equals(now.toString()) && LocalDate.parse(s.getDate()).getYear() == targetYear) {
                             try {
                                 String time = s.getTime().trim().toLowerCase(); // "11:25 am", "06:27 pm"
                                 // Extract hour
