@@ -29,3 +29,7 @@ date,time,customerName,model,quantity,subtotal,transactionMethod,employee
 2025-12-28,10:21 AM,Venice,SW2400-3,1,769.0,Cash,Tan Guan Han,C68,C6001
 2025-12-28,10:31 AM,Rayan,SW2400-2,2,1538.0,Card,Test Manager,C65,tess
 2026-01-07,03:26 pm,Wong Kwang Zhen,SW2400-1,1,789.0,Card,Megan Mei,C60,C6009
+2026-01-07,06:14 pm,Yong Zhun,SW2400-1,1,789.0,Card,test,C60,test
+2026-01-07,06:15 pm,Yong Zhun,SW2400-1,1,789.0,Card,test,C60,test
+2026-01-07,06:33 pm,Anwar Ibrahim,SW2500-4,11,9075.0,Cash,Jeff,C60,Jeff
+2026-01-07,06:42 pm,Hong Han,SW2500-2,1,845.0,Card,test,C60,test

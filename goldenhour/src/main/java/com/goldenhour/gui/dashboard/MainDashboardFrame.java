@@ -165,4 +165,22 @@ public class MainDashboardFrame extends JFrame {
 
         return btn;
     }
+
+    // Method to update sidebar highlighting when navigating programmatically
+    public void updateSidebarActive(String cardName) {
+        for (SidebarButton btn : navButtons) {
+            // Find the button with matching card name by checking its text
+            if ((cardName.equals("HOME") && btn.getText().equals("Dashboard")) ||
+                (cardName.equals("ATTENDANCE") && btn.getText().equals("Attendance")) ||
+                (cardName.equals("STOCK") && btn.getText().equals("Stock Inventory")) ||
+                (cardName.equals("STOCK_OPS") && btn.getText().equals("Stock Operations")) ||
+                (cardName.equals("SALES") && btn.getText().equals("Sales")) ||
+                (cardName.equals("REGISTER_EMP") && btn.getText().equals("Register Employee")) ||
+                (cardName.equals("DB_VIEWER") && btn.getText().equals("Database Viewer"))) {
+                btn.setActive(true);
+            } else {
+                btn.setActive(false);
+            }
+        }
+    }
 }

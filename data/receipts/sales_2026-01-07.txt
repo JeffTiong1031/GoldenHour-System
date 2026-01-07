@@ -13,3 +13,49 @@ Method: Card
 Employee: Megan Mei
 
 --------------------------------------------------
+=== Sales Receipt ===
+Date: 2026-01-07
+Time: 06:17 pm
+Outlet: C60
+Customer: Yong Zhun
+----------------------------------
+ITEMS PURCHASED:
+SW2400-1           x 1   RM   789.00
+SW2400-1           x 1   RM   789.00
+----------------------------------
+Total Items: 2
+Grand Total: RM 1578.00
+Method: Card
+Employee: test
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2026-01-07
+Time: 06:34 pm
+Outlet: C60
+Customer: Anwar Ibrahim
+----------------------------------
+ITEMS PURCHASED:
+SW2500-4           x 11  RM  9075.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 9075.00
+Method: Cash
+Employee: Jeff
+
+--------------------------------------------------
+=== Sales Receipt ===
+Date: 2026-01-07
+Time: 06:44 pm
+Outlet: C60
+Customer: Hong Han
+----------------------------------
+ITEMS PURCHASED:
+SW2500-2           x 1   RM   845.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 845.00
+Method: Card
+Employee: test
+
+--------------------------------------------------

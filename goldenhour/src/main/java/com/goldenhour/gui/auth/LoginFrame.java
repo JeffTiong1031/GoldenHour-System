@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 public class LoginFrame extends JFrame {
     private JTextField userIdField;
     private JPasswordField passwordField;
+    private JLabel userIdErrorLabel;
 
     // Update these paths to your actual images if needed
     
@@ -72,9 +73,21 @@ public class LoginFrame extends JFrame {
         // -- Inputs --
         JLabel userLbl = createLabel("User ID");
         userIdField = createTextField();
+        userIdField.addActionListener(e -> validateUserIdAndMoveFocus());
+        userIdField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                if (!userIdField.getText().trim().isEmpty()) {
+                    clearUserIdError();
+                }
+            }
+        });
+        userIdErrorLabel = new JLabel("");
+        userIdErrorLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        userIdErrorLabel.setForeground(new Color(234, 84, 85));
         
         JLabel passLbl = createLabel("Password");
         passwordField = createPasswordField();
+        passwordField.addActionListener(e -> performLogin()); // Allow Enter key to login
 
         // -- Login Button (New Orange Theme) --
         JButton loginBtn = createOrangeButton("Sign in");
@@ -91,7 +104,8 @@ public class LoginFrame extends JFrame {
         formContainer.add(userLbl);
         formContainer.add(Box.createVerticalStrut(5));
         formContainer.add(userIdField);
-        formContainer.add(Box.createVerticalStrut(15));
+        formContainer.add(userIdErrorLabel);
+        formContainer.add(Box.createVerticalStrut(10));
         
         formContainer.add(passLbl);
         formContainer.add(Box.createVerticalStrut(5));
@@ -118,6 +132,33 @@ public class LoginFrame extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Invalid User ID or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void validateUserIdAndMoveFocus() {
+        String userId = userIdField.getText().trim();
+        
+        if (userId.isEmpty()) {
+            showUserIdError("User ID is required");
+        } else {
+            clearUserIdError();
+            passwordField.requestFocus();
+        }
+    }
+
+    private void showUserIdError(String message) {
+        userIdField.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(234, 84, 85), 2, true),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        userIdErrorLabel.setText(message);
+    }
+
+    private void clearUserIdError() {
+        userIdField.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(217, 222, 227), 1, true),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        userIdErrorLabel.setText("");
     }
 
     // --- HELPER: Create Orange Themed Button ---

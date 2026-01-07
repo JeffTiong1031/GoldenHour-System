@@ -123,6 +123,16 @@ public class POSPanel extends BackgroundPanel {
                     if (e.getClickCount() == 2) addToCart();
                 }
             });
+            
+            // Allow Enter key to add item to cart
+            catalogTable.addKeyListener(new java.awt.event.KeyAdapter() {
+                public void keyPressed(java.awt.event.KeyEvent e) {
+                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                        e.consume();
+                        addToCart();
+                    }
+                }
+            });
 
             leftCard.add(new JScrollPane(catalogTable), BorderLayout.CENTER);
             leftCard.add(new JLabel("<html><center><font color='gray'>Double-click to add item</font></center></html>", SwingConstants.CENTER), BorderLayout.SOUTH);
@@ -138,11 +148,87 @@ public class POSPanel extends BackgroundPanel {
             cartTitle.setForeground(new Color(52, 71, 103));
             rightCard.add(cartTitle, BorderLayout.NORTH);
 
-            String[] cartCols = {"Item", "Qty", "Subtotal"};
+            String[] cartCols = {"Item", "Qty", "Subtotal", ""};
             cartModel = new DefaultTableModel(cartCols, 0) { public boolean isCellEditable(int r, int c) {return false;}};
             cartTable = new JTable(cartModel);
             styleTable(cartTable);
-            rightCard.add(new JScrollPane(cartTable), BorderLayout.CENTER);
+            
+            // Set up delete button column
+            cartTable.getColumnModel().getColumn(3).setMaxWidth(50);
+            cartTable.getColumnModel().getColumn(3).setMinWidth(50);
+            cartTable.getColumnModel().getColumn(3).setCellRenderer(new javax.swing.table.DefaultTableCellRenderer() {
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                    JLabel lbl = new JLabel("🗑", SwingConstants.CENTER);
+                    lbl.setFont(new Font("SansSerif", Font.PLAIN, 14));
+                    lbl.setForeground(new Color(234, 84, 85));
+                    lbl.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    lbl.setOpaque(true);
+                    lbl.setBackground(isSelected ? new Color(240, 240, 255) : Color.WHITE);
+                    return lbl;
+                }
+            });
+            
+            // Handle delete click
+            cartTable.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    int row = cartTable.rowAtPoint(e.getPoint());
+                    int col = cartTable.columnAtPoint(e.getPoint());
+                    if (row >= 0 && col == 3) {
+                        // Delete clicked
+                        currentCart.remove(row);
+                        refreshCart();
+                    }
+                    rightCard.requestFocusInWindow();
+                }
+            });
+            
+            JScrollPane cartScroll = new JScrollPane(cartTable);
+            cartScroll.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+            
+            // Make the right card focusable for keyboard navigation
+            rightCard.setFocusable(true);
+            
+            // Allow Enter key on right card to proceed to payment
+            rightCard.addKeyListener(new java.awt.event.KeyAdapter() {
+                public void keyPressed(java.awt.event.KeyEvent e) {
+                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                        e.consume();
+                        if(currentCart.isEmpty()) {
+                            JOptionPane.showMessageDialog(CartStepPanel.this, "Cart is empty! Please add items first.", "Empty Cart", JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            goToStep(2);
+                        }
+                    }
+                }
+            });
+            
+            // Add focus listener to show frame around cart when focused
+            rightCard.addFocusListener(new java.awt.event.FocusListener() {
+                public void focusGained(java.awt.event.FocusEvent e) {
+                    rightCard.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(105, 108, 255), 2),
+                        new EmptyBorder(13, 13, 13, 13)
+                    ));
+                }
+                public void focusLost(java.awt.event.FocusEvent e) {
+                    rightCard.setBorder(new EmptyBorder(15, 15, 15, 15));
+                }
+            });
+            
+            // Allow click anywhere on right card to focus it
+            rightCard.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    rightCard.requestFocusInWindow();
+                }
+            });
+            cartScroll.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    rightCard.requestFocusInWindow();
+                }
+            });
+            
+            rightCard.add(cartScroll, BorderLayout.CENTER);
 
             // Bottom Total & Next
             JPanel bottomP = new JPanel(new BorderLayout(0, 10));
@@ -190,25 +276,43 @@ public class POSPanel extends BackgroundPanel {
             try {
                 int qty = Integer.parseInt(qtyStr);
                 
-                if(qty > 0 && qty <= stock) {
-                    Employee user = AuthService.getCurrentUser();
-                    String empName = (user != null) ? user.getName() : "Unknown";
-                    String empId = (user != null) ? user.getId() : "Unknown";
+                // Calculate total quantity already in cart for this item
+                int existingQty = 0;
+                Sales existingItem = null;
+                for (Sales s : currentCart) {
+                    if (s.getModel().equals(code)) {
+                        existingQty = s.getQuantity();
+                        existingItem = s;
+                        break;
+                    }
+                }
+                
+                // Check if total quantity (existing + new) exceeds stock
+                if(qty > 0 && (existingQty + qty) <= stock) {
+                    if (existingItem != null) {
+                        // Update existing item quantity and subtotal
+                        existingItem.setQuantity(existingQty + qty);
+                        existingItem.setSubtotal(existingItem.getQuantity() * price);
+                    } else {
+                        // Add new item to cart
+                        Employee user = AuthService.getCurrentUser();
+                        String empName = (user != null) ? user.getName() : "Unknown";
+                        String empId = (user != null) ? user.getId() : "Unknown";
 
-                    // FIX: Updated Constructor Call
-                    Sales s = new Sales(
-                        TimeUtils.getDate(), 
-                        TimeUtils.getTime(), 
-                        "Walk-in", 
-                        code, 
-                        qty, 
-                        price*qty, 
-                        "PENDING", 
-                        empName,
-                        currentOutlet, // <-- Added Outlet
-                        empId          // <-- Added ID
-                    );
-                    currentCart.add(s);
+                        Sales s = new Sales(
+                            TimeUtils.getDate(), 
+                            TimeUtils.getTime(), 
+                            "Walk-in", 
+                            code, 
+                            qty, 
+                            price*qty, 
+                            "PENDING", 
+                            empName,
+                            currentOutlet,
+                            empId
+                        );
+                        currentCart.add(s);
+                    }
                     refreshCart();
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid Quantity or Insufficient Stock");
@@ -222,7 +326,7 @@ public class POSPanel extends BackgroundPanel {
             cartModel.setRowCount(0);
             grandTotal = 0;
             for(Sales s : currentCart) {
-                cartModel.addRow(new Object[]{s.getModel(), s.getQuantity(), String.format("%.2f", s.getSubtotal())});
+                cartModel.addRow(new Object[]{s.getModel(), s.getQuantity(), String.format("%.2f", s.getSubtotal()), "🗑"});
                 grandTotal += s.getSubtotal();
             }
             totalLabel.setText("Total: RM " + String.format("%.2f", grandTotal));

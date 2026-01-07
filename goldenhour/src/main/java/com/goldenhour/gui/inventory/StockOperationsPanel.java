@@ -49,6 +49,7 @@ public class StockOperationsPanel extends BackgroundPanel {
     private JPanel moveFormPanel;
     private JComboBox<String> sourceCombo, destCombo;
     private JTextField modelField, qtyField;
+    private JLabel modelErrorLabel, qtyErrorLabel;
     
     // Components for "Cart"
     private JTable transferCartTable;
@@ -265,14 +266,30 @@ public class StockOperationsPanel extends BackgroundPanel {
         gbc.gridx = 0; gbc.gridy = 4;
         inputContainer.add(createLabel("Model Code"), gbc);
         modelField = createStyledField();
+        modelField.addActionListener(e -> validateModelAndMoveFocus());
         gbc.gridx = 1;
         inputContainer.add(modelField, gbc);
+        
+        modelErrorLabel = new JLabel("");
+        modelErrorLabel.setFont(new Font("SansSerif", Font.PLAIN, 9));
+        modelErrorLabel.setForeground(new Color(234, 84, 85));
+        gbc.gridx = 1; gbc.gridy = 4; gbc.insets = new Insets(50, 10, 0, 10);
+        inputContainer.add(modelErrorLabel, gbc);
+        gbc.insets = new Insets(10, 10, 10, 10);
 
         gbc.gridx = 0; gbc.gridy = 5;
         inputContainer.add(createLabel("Quantity"), gbc);
         qtyField = createStyledField();
+        qtyField.addActionListener(e -> validateQtyAndAddToCart());
         gbc.gridx = 1;
         inputContainer.add(qtyField, gbc);
+        
+        qtyErrorLabel = new JLabel("");
+        qtyErrorLabel.setFont(new Font("SansSerif", Font.PLAIN, 9));
+        qtyErrorLabel.setForeground(new Color(234, 84, 85));
+        gbc.gridx = 1; gbc.gridy = 5; gbc.insets = new Insets(50, 10, 0, 10);
+        inputContainer.add(qtyErrorLabel, gbc);
+        gbc.insets = new Insets(10, 10, 10, 10);
 
         addToCartBtn = new JButton("+ Add to Transfer List");
         styleSecondaryBtn(addToCartBtn);
@@ -820,4 +837,59 @@ public class StockOperationsPanel extends BackgroundPanel {
     private void styleCombo(JComboBox b) { b.setBackground(Color.WHITE); b.setPreferredSize(new Dimension(250,40)); }
     private void stylePrimaryBtn(JButton b) { b.setBackground(new Color(105,108,255)); b.setForeground(Color.WHITE); b.setFocusPainted(false); b.setFont(new Font("SansSerif",Font.BOLD,14)); b.setPreferredSize(new Dimension(200,45)); }
     private void styleSecondaryBtn(JButton b) { b.setBackground(Color.WHITE); b.setForeground(Color.GRAY); b.setBorder(new LineBorder(Color.LIGHT_GRAY)); b.setFocusPainted(false); b.setFont(new Font("SansSerif",Font.BOLD,12)); b.setPreferredSize(new Dimension(100,35)); }
+
+    // --- VALIDATION METHODS ---
+    private void validateModelAndMoveFocus() {
+        String modelCode = modelField.getText().trim();
+        
+        if (modelCode.isEmpty()) {
+            showModelError("Model Code is required");
+        } else {
+            clearModelError();
+            qtyField.requestFocus();
+        }
+    }
+
+    private void validateQtyAndAddToCart() {
+        String qtyStr = qtyField.getText().trim();
+        
+        if (qtyStr.isEmpty()) {
+            showQtyError("Quantity is required");
+        } else {
+            clearQtyError();
+            addItemToCart();
+        }
+    }
+
+    private void showModelError(String message) {
+        modelField.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(234, 84, 85), 2),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        modelErrorLabel.setText(message);
+    }
+
+    private void clearModelError() {
+        modelField.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(217, 222, 227)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        modelErrorLabel.setText("");
+    }
+
+    private void showQtyError(String message) {
+        qtyField.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(234, 84, 85), 2),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        qtyErrorLabel.setText(message);
+    }
+
+    private void clearQtyError() {
+        qtyField.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(217, 222, 227)),
+            new EmptyBorder(5, 10, 5, 10)
+        ));
+        qtyErrorLabel.setText("");
+    }
 }

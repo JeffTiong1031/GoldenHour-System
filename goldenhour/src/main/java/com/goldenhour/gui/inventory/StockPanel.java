@@ -90,6 +90,7 @@ public class StockPanel extends BackgroundPanel {
         addBtn.setFocusPainted(false);
         addBtn.setFont(new Font("SansSerif", Font.BOLD, 12));
         addBtn.setPreferredSize(new Dimension(120, 35));
+        addBtn.addActionListener(e -> navigateToStockOperations());
         rightFilter.add(addBtn);
 
         filterBar.add(rightFilter, BorderLayout.EAST);
@@ -334,6 +335,39 @@ public class StockPanel extends BackgroundPanel {
             p.add(edit);
             p.add(del);
             return p;
+        }
+    }
+
+    // --- NAVIGATION ---
+    private void navigateToStockOperations() {
+        Container parent = this.getParent();
+        while (parent != null) {
+            if (parent.getLayout() instanceof CardLayout) {
+                CardLayout cl = (CardLayout) parent.getLayout();
+                cl.show(parent, "STOCK_OPS");
+                
+                // Notify parent to update sidebar styling
+                notifyPageChange("STOCK_OPS");
+                break;
+            }
+            parent = parent.getParent();
+        }
+    }
+
+    private void notifyPageChange(String cardName) {
+        Container parent = this.getParent();
+        while (parent != null) {
+            parent = parent.getParent();
+            if (parent != null && parent.getClass().getName().contains("MainDashboardFrame")) {
+                try {
+                    java.lang.reflect.Method method = parent.getClass().getDeclaredMethod("updateSidebarActive", String.class);
+                    method.setAccessible(true);
+                    method.invoke(parent, cardName);
+                } catch (Exception e) {
+                    // Fallback: navigation still works, just sidebar won't highlight
+                }
+                break;
+            }
         }
     }
 }

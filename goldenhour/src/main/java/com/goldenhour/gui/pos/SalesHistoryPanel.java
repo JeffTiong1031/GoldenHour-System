@@ -24,6 +24,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 public class SalesHistoryPanel extends JPanel {
 
@@ -81,17 +83,21 @@ public class SalesHistoryPanel extends JPanel {
         totalSalesLabel.setForeground(new Color(40, 199, 111));
         footer.add(totalSalesLabel, BorderLayout.WEST);
 
-        JButton voidBtn = new JButton("Void Selected Sale");
-        styleDangerButton(voidBtn);
-        voidBtn.addActionListener(e -> performVoidAction());
-        
-        JPanel btnWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        btnWrapper.setOpaque(false);
-        btnWrapper.add(voidBtn);
-        footer.add(btnWrapper, BorderLayout.EAST);
-
         cardPanel.add(footer, BorderLayout.SOUTH);
         add(cardPanel, BorderLayout.CENTER);
+
+        // Auto-refresh when panel becomes visible
+        addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                loadSalesData();
+                updateTotalSales();
+            }
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {}
+            @Override
+            public void ancestorMoved(AncestorEvent event) {}
+        });
 
         loadSalesData();
         updateTotalSales();
@@ -313,21 +319,6 @@ public class SalesHistoryPanel extends JPanel {
         applySorting();
     }
 
-    private void performVoidAction() {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow == -1) { JOptionPane.showMessageDialog(this, "Please select a sale to void."); return; }
-        int modelRow = table.convertRowIndexToModel(selectedRow);
-        
-        String customer = (String) tableModel.getValueAt(modelRow, 2);
-        String total = tableModel.getValueAt(modelRow, 5).toString();
-        int confirm = JOptionPane.showConfirmDialog(this, "Void sale for " + customer + " (RM " + total + ")?", "Confirm Void", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            tableModel.removeRow(modelRow);
-            updateTotalSales();
-            JOptionPane.showMessageDialog(this, "Sale Voided.");
-        }
-    }
-
     // =========================================================================
     //  PURE JAVA CUSTOM DATE PICKER COMPONENT
     // =========================================================================
@@ -498,16 +489,6 @@ public class SalesHistoryPanel extends JPanel {
         box.setBackground(Color.WHITE);
         box.setFont(new Font("SansSerif", Font.PLAIN, 13));
         box.setPreferredSize(new Dimension(120, 35));
-    }
-
-    private void styleDangerButton(JButton btn) {
-        btn.setBackground(new Color(255, 235, 235));
-        btn.setForeground(new Color(220, 53, 69));
-        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
-        btn.setFocusPainted(false);
-        btn.setBorder(new LineBorder(new Color(220, 53, 69), 1, true));
-        btn.setPreferredSize(new Dimension(150, 40));
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
     
     private void styleSecondaryButton(JButton btn) {
