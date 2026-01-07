@@ -33,3 +33,4 @@ date,time,customerName,model,quantity,subtotal,transactionMethod,employee
 2026-01-07,06:15 pm,Yong Zhun,SW2400-1,1,789.0,Card,test,C60,test
 2026-01-07,06:33 pm,Anwar Ibrahim,SW2500-4,11,9075.0,Cash,Jeff,C60,Jeff
 2026-01-07,06:42 pm,Hong Han,SW2500-2,1,845.0,Card,test,C60,test
+2026-01-08,02:47 am,Jeff,SW2500-2,1,845.0,Cash,Test Manager,C60,tess

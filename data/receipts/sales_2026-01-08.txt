@@ -1,0 +1,15 @@
+=== Sales Receipt ===
+Date: 2026-01-08
+Time: 02:47 am
+Outlet: C60
+Customer: Jeff
+----------------------------------
+ITEMS PURCHASED:
+SW2500-2           x 1   RM   845.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 845.00
+Method: Cash
+Employee: Test Manager
+
+--------------------------------------------------
