@@ -24,6 +24,7 @@ import java.awt.*;
  * - Duplicate ID checking
  * - Role selection (Full-time, Part-time, Manager)
  * - Automatic data synchronization with database viewer
+ * - Keyboard navigation: Press Enter to move between fields, Enter on password field triggers registration
  *
  * @author GoldenHour System Team
  */
@@ -121,6 +122,9 @@ public class RegisterEmployeePanel extends BackgroundPanel {
         form.add(Box.createVerticalStrut(5));
         form.add(roleCombo);
 
+        // Add keyboard navigation - Enter key moves to next field
+        setupKeyboardNavigation();
+
         card.add(form, BorderLayout.CENTER);
 
         // 3. Register Button
@@ -135,6 +139,22 @@ public class RegisterEmployeePanel extends BackgroundPanel {
         card.add(regBtn, BorderLayout.SOUTH);
 
         add(card);
+    }
+
+    /**
+     * Sets up keyboard navigation for the form fields.
+     * Pressing Enter in a text field moves focus to the next field.
+     * Pressing Enter in the password field triggers registration.
+     */
+    private void setupKeyboardNavigation() {
+        // Name field: Enter moves to ID field
+        nameField.addActionListener(e -> idField.requestFocusInWindow());
+
+        // ID field: Enter moves to password field
+        idField.addActionListener(e -> passField.requestFocusInWindow());
+
+        // Password field: Enter triggers registration
+        passField.addActionListener(e -> performRegistration());
     }
 
     /**
