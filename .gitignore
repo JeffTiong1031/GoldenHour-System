@@ -1,8 +1,5 @@
 target/
 *.class
-data/goldenhour.db
-data/*.csv
-data/receipts/*.txt
 .idea/
 .vscode/
 *.log
