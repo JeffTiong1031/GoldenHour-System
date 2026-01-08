@@ -88,3 +88,18 @@ Method: Cash
 Employee: Test Manager
 
 --------------------------------------------------
+=== Sales Receipt ===
+Date: 2026-01-08
+Time: 05:08 PM
+Outlet: C60
+Customer: Max Verstappen
+----------------------------------
+ITEMS PURCHASED:
+SW2400-2           x 3   RM  2307.00
+----------------------------------
+Total Items: 1
+Grand Total: RM 2307.00
+Method: Cash
+Employee: Test Manager
+
+--------------------------------------------------
